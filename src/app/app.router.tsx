@@ -1,5 +1,9 @@
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 import { AppLayout } from "../shared/components/layout/AppLayout";
+import { CampaignCreatePage, CampaignDetailPage, CampaignListPage } from "@/features/campaigns";
+import { DashboardPage } from "@/features/dasboard";
+import { RecipientListPage } from "@/features/recipients/pages/RecipientListPage";
+import { TemplateListPage } from "@/features/templates";
 
 
 const appRouter = createBrowserRouter([
@@ -17,27 +21,23 @@ const appRouter = createBrowserRouter([
             },
             {
                 path: 'campaigns', 
-                element: <CampaignsPage />
-            },
-            {
-                path: 'campaigns/list', 
-                element: <CampaignsListPage />
+                element: <CampaignListPage />
             },
             {
                 path: 'campaigns/new', 
-                element: <CampaignsCreatePage />
+                element: <CampaignCreatePage />
             },
             {
                 path: 'campaigns/:id', 
-                element: <CampaignsDetailPage />
+                element: <CampaignDetailPage />
             },
             {
                 path: 'recipients',  
-                element: <RecipientsPage />
+                element: <RecipientListPage />
             },
             {
                 path: 'templates',   
-                element: <TemplatesPage />
+                element: <TemplateListPage />
             }
         ]
     }
