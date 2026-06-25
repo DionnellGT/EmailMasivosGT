@@ -1,0 +1,24 @@
+export const ENDPOINTS = {
+  campaigns: {
+    list:   '/campaigns',
+    create: '/campaigns',
+    detail: (id: string) => `/campaigns/${id}`,
+    update: (id: string) => `/campaigns/${id}`,
+    delete: (id: string) => `/campaigns/${id}`,
+    send:   (id: string) => `/campaigns/${id}/send`,
+  },
+  recipients: {
+    list:   '/recipients',
+    create: '/recipients',
+    import: '/recipients/import',
+    delete: (id: string) => `/recipients/${id}`,
+  },
+  templates: {
+    list:   '/templates',
+    create: '/templates',
+    update: (id: string) => `/templates/${id}`,
+  },
+  dashboard: {
+    metrics: '/dashboard/metrics',
+  },
+} as const
