@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sileo'
+import { sileo } from 'sileo'
 import { api } from '@/shared/api/axios'
 import { ENDPOINTS } from '@/shared/api/endpoints'
 import type { Recipient } from '@/shared/types'
@@ -20,9 +20,9 @@ export function useCreateRecipient() {
       api.post<Recipient>(ENDPOINTS.recipients.create, data).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QUERY_KEY })
-      toast.success('Destinatario agregado')
+      sileo.success({title: 'Destinatario agregado'})
     },
-    onError: () => toast.error('Error al agregar destinatario'),
+    onError: () => sileo.error({title: 'Error al agregar destinatario'}),
   })
 }
 
@@ -32,9 +32,9 @@ export function useDeleteRecipient() {
     mutationFn: (id: string) => api.delete(ENDPOINTS.recipients.delete(id)),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QUERY_KEY })
-      toast.success('Destinatario eliminado')
+      sileo.success({title: 'Destinatario eliminado'})
     },
-    onError: () => toast.error('Error al eliminar'),
+    onError: () => sileo.error({title: 'Error al eliminar'}),
   })
 }
 
@@ -45,8 +45,8 @@ export function useImportRecipients() {
       api.post(ENDPOINTS.recipients.import, { recipients }).then((r) => r.data),
     onSuccess: (data: { imported: number }) => {
       qc.invalidateQueries({ queryKey: QUERY_KEY })
-      toast.success(`${data.imported} destinatarios importados`)
+      sileo.success({title: `${data.imported} destinatarios importados`})
     },
-    onError: () => toast.error('Error al importar CSV'),
+    onError: () => sileo.error({title: 'Error al importar CSV'}),
   })
 }

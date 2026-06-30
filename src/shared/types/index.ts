@@ -1,4 +1,4 @@
-export type CampaignStatus = 'draft' | 'scheduled' | 'sending' | 'sent' | 'failed'
+export type CampaignStatus = 'draft' | 'sending' | 'sent' | 'failed'
 
 export interface Campaign {
   id: string
@@ -6,25 +6,31 @@ export interface Campaign {
   subject: string
   body: string
   status: CampaignStatus
-  recipientListId: string
   templateId?: string
+  totalRecipients: number
+  sentCount: number
+  failedCount: number
   sentAt?: string
   createdAt: string
-  stats: { total: number; sent: number; failed: number }
+  updatedAt: string
+}
+
+export interface SendLog {
+  id: string
+  email: string
+  status: 'sent' | 'failed'
+  error?: string
+  resendId?: string
+  sentAt: string
+  recipient?: Recipient
 }
 
 export interface Recipient {
   id: string
   name: string
   email: string
-  tags?: string[]
-  createdAt: string
-}
-
-export interface RecipientList {
-  id: string
-  name: string
-  count: number
+  tags: string[]
+  isActive: boolean
   createdAt: string
 }
 

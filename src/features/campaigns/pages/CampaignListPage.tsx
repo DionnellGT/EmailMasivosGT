@@ -9,7 +9,6 @@ import type { Campaign, CampaignStatus } from '@/shared/types'
 
 const statusConfig: Record<CampaignStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
   draft:     { label: 'Borrador',   variant: 'secondary' },
-  scheduled: { label: 'Programado', variant: 'outline' },
   sending:   { label: 'Enviando',   variant: 'default' },
   sent:      { label: 'Enviado',    variant: 'default' },
   failed:    { label: 'Fallido',    variant: 'destructive' },
@@ -60,8 +59,8 @@ export function CampaignListPage() {
                 key: 'stats',
                 label: 'Progreso',
                 render: (row) =>
-                  row.stats.total > 0
-                    ? `${row.stats.sent} / ${row.stats.total}`
+                  row.totalRecipients > 0
+                    ? `${row.sentCount} / ${row.totalRecipients}`
                     : '—',
               },
               {
