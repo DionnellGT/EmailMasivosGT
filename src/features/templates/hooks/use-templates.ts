@@ -20,7 +20,7 @@ export function useCreateTemplate() {
       api.post<Template>(ENDPOINTS.templates.create, data).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QUERY_KEY })
-      sileo.success({title:'Plantilla creada'})
+      sileo.success({title: 'Plantilla creada'})
     },
     onError: () => sileo.error({title: 'Error al crear la plantilla'}),
   })
@@ -36,5 +36,17 @@ export function useUpdateTemplate(id: string) {
       sileo.success({title: 'Plantilla actualizada'})
     },
     onError: () => sileo.error({title: 'Error al actualizar'}),
+  })
+}
+
+export function useDeleteTemplate() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => api.delete(ENDPOINTS.templates.delete(id)),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: QUERY_KEY })
+      sileo.success({title: 'Plantilla eliminada'})
+    },
+    onError: () => sileo.error({title: 'Error al eliminar la plantilla'}),
   })
 }

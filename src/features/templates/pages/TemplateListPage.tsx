@@ -1,21 +1,32 @@
 import { useState } from 'react'
-import { FileText, Pencil } from 'lucide-react'
+import { FileText, Pencil, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { TemplateForm } from '../components/TemplateForm'
 import { TemplatePreview } from '../components/TemplatePreview'
-import { useTemplates, useCreateTemplate, useUpdateTemplate } from '../hooks/use-templates'
+import { useTemplates, useCreateTemplate, useUpdateTemplate, useDeleteTemplate } from '../hooks/use-templates'
 import type { Template } from '@/shared/types'
 import type { TemplateFormValues } from '../schemas/template.schema'
 
 export function TemplateListPage() {
   const { data: templates = [], isLoading } = useTemplates()
   const { mutate: createTemplate, isPending: isCreating } = useCreateTemplate()
-  const [editingTemplate, setEditingTemplate] = useState<Template | null>(null)
-  const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null)
-  const [createOpen, setCreateOpen] = useState(false)
+  const { mutate: deleteTemplate, isPending: isDeleting } = useDeleteTemplate()
+
+  const [editingTemplate, setEditingTemplate]   = useState<Template | null>(null)
+  const [previewTemplate, setPreviewTemplate]   = useState<Template | null>(null)
+  const [deletingTemplate, setDeletingTemplate] = useState<Template | null>(null)
+  const [createOpen, setCreateOpen]             = useState(false)
 
   const { mutate: updateTemplate, isPending: isUpdating } = useUpdateTemplate(
     editingTemplate?.id ?? ''
@@ -29,6 +40,13 @@ export function TemplateListPage() {
     updateTemplate(values, { onSuccess: () => setEditingTemplate(null) })
   }
 
+  function handleConfirmDelete() {
+    if (!deletingTemplate) return
+    deleteTemplate(deletingTemplate.id, {
+      onSuccess: () => setDeletingTemplate(null),
+    })
+  }
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -39,7 +57,6 @@ export function TemplateListPage() {
           </p>
         </div>
 
-        {/* Sheet para crear */}
         <Sheet open={createOpen} onOpenChange={setCreateOpen}>
           <SheetTrigger asChild>
             <Button size="sm">
@@ -77,21 +94,36 @@ export function TemplateListPage() {
             >
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-sm">{template.name}</CardTitle>
-                    <p className="text-xs text-muted-foreground mt-0.5">{template.subject}</p>
+                  <div className="flex-1 min-w-0 pr-2">
+                    <CardTitle className="text-sm truncate">{template.name}</CardTitle>
+                    <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                      {template.subject}
+                    </p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 shrink-0"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setEditingTemplate(template)
-                    }}
-                  >
-                    <Pencil size={12} />
-                  </Button>
+                  <div className="flex gap-1 shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setEditingTemplate(template)
+                      }}
+                    >
+                      <Pencil size={12} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setDeletingTemplate(template)
+                      }}
+                    >
+                      <Trash2 size={12} />
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -106,6 +138,41 @@ export function TemplateListPage() {
           ))}
         </div>
       )}
+
+      {/* Dialog de confirmación para eliminar */}
+      <Dialog
+        open={!!deletingTemplate}
+        onOpenChange={(open) => !open && setDeletingTemplate(null)}
+      >
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>¿Eliminar plantilla?</DialogTitle>
+            <DialogDescription>
+              Estás a punto de eliminar{' '}
+              <span className="font-medium text-foreground">
+                "{deletingTemplate?.name}"
+              </span>
+              . Esta acción no se puede deshacer.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setDeletingTemplate(null)}
+              disabled={isDeleting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Eliminando...' : 'Eliminar'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Sheet para editar */}
       <Sheet open={!!editingTemplate} onOpenChange={(open) => !open && setEditingTemplate(null)}>

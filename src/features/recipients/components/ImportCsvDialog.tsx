@@ -15,7 +15,7 @@ export function ImportCsvDialog() {
       .filter((line) => !line.startsWith('nombre') && !line.startsWith('name'))
       .map((line) => {
         const [name, email, ...rest] = line.split(',').map((s) => s.trim())
-        return { name, email, tags: rest }
+        return { name, email, tags: rest, isActive: true }
       })
       .filter((r) => r.name && r.email)
 

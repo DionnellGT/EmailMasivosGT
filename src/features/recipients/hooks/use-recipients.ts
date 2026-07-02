@@ -50,3 +50,16 @@ export function useImportRecipients() {
     onError: () => sileo.error({title: 'Error al importar CSV'}),
   })
 }
+
+export function useDeleteAllRecipients() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () =>
+      api.delete<{ deleted: number }>(ENDPOINTS.recipients.deleteAll).then((r) => r.data),
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: QUERY_KEY })
+      sileo.success({title: `${data.deleted} destinatarios eliminados`})
+    },
+    onError: () => sileo.error({title: 'Error al eliminar los destinatarios'}),
+  })
+}
