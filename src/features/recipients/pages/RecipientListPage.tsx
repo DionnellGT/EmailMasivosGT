@@ -36,7 +36,6 @@ export function RecipientListPage() {
       name:  values.name,
       email: values.email,
       tags:  values.tags ? values.tags.split(',').map((t) => t.trim()) : [],
-      isActive: true,
     })
   }
 

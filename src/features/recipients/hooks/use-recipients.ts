@@ -16,13 +16,13 @@ export function useRecipients() {
 export function useCreateRecipient() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (data: Omit<Recipient, 'id' | 'createdAt'>) =>
+    mutationFn: (data: { name: string; email: string; tags?: string[] }) =>
       api.post<Recipient>(ENDPOINTS.recipients.create, data).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QUERY_KEY })
-      sileo.success({title: 'Destinatario agregado', duration: 3000})
+      sileo.success({ title: 'Destinatario agregado', duration: 3000 })
     },
-    onError: () => sileo.error({title: `Error al agregar destinatario`, duration: 3000}),
+    onError: () => sileo.error({ title: 'Error al agregar destinatario', duration: 3000 }),
   })
 }
 

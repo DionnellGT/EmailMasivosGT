@@ -1,9 +1,19 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { WandSparkles } from 'lucide-react'
 import { campaignSchema, type CampaignFormValues } from '../schemas/campaign.schema'
+import { useTemplates } from '@/features/templates/hooks/use-templates'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 interface Props {
   defaultValues?: Partial<CampaignFormValues>
@@ -12,13 +22,69 @@ interface Props {
 }
 
 export function CampaignForm({ defaultValues, onSubmit, isLoading }: Props) {
-  const { register, handleSubmit, formState: { errors } } = useForm<CampaignFormValues>({
+  const { data: templates = [] } = useTemplates()
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<CampaignFormValues>({
     resolver: zodResolver(campaignSchema),
     defaultValues,
   })
 
+  const selectedTemplateId = watch('templateId')
+
+  // Cuando el usuario selecciona una plantilla, pre-rellena asunto y cuerpo
+  function handleTemplateSelect(templateId: string) {
+    if (templateId === 'none') {
+      setValue('templateId', undefined)
+      return
+    }
+    const template = templates.find((t) => t.id === templateId)
+    if (!template) return
+    setValue('templateId', templateId)
+    setValue('subject', template.subject)
+    setValue('body', template.body, { shouldValidate: true })
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+
+      {/* Selector de plantilla */}
+      {templates.length > 0 && (
+        <div className="space-y-1">
+          <Label className="flex items-center gap-1.5">
+            <WandSparkles size={13} className="text-muted-foreground" />
+            Usar plantilla{' '}
+            <span className="text-muted-foreground font-normal">(opcional)</span>
+          </Label>
+          <Select
+            value={selectedTemplateId ?? 'none'}
+            onValueChange={handleTemplateSelect}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Selecciona una plantilla..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Sin plantilla</SelectItem>
+              {templates.map((t) => (
+                <SelectItem key={t.id} value={t.id}>
+                  {t.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {selectedTemplateId && (
+            <p className="text-xs text-muted-foreground">
+              Plantilla aplicada — puedes editar el asunto y cuerpo antes de guardar.
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="space-y-1">
         <Label>Nombre de campaña</Label>
         <Input {...register('name')} placeholder="Ej: Newsletter Junio" />
@@ -36,7 +102,7 @@ export function CampaignForm({ defaultValues, onSubmit, isLoading }: Props) {
         <textarea
           {...register('body')}
           rows={8}
-          className="w-full rounded-md border px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full rounded-md border px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring font-sans"
           placeholder="Hola {nombre}, ..."
         />
         {errors.body && <p className="text-xs text-destructive">{errors.body.message}</p>}
