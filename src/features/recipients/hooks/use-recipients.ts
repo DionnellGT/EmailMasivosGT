@@ -22,7 +22,7 @@ export function useCreateRecipient() {
       qc.invalidateQueries({ queryKey: QUERY_KEY })
       sileo.success({title: 'Destinatario agregado', duration: 3000})
     },
-    onError: (error) => sileo.error({title: `${error.message} Error al agregar destinatario`, duration: 3000}),
+    onError: () => sileo.error({title: `Error al agregar destinatario`, duration: 3000}),
   })
 }
 
