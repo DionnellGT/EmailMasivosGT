@@ -11,7 +11,7 @@ export const EmailMasivosApp = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AppRouter />
-      <Toaster position="top-right" />
+      <Toaster position='top-center' />
     </QueryClientProvider>
 
   )
