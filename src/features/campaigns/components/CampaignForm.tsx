@@ -1,5 +1,4 @@
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { WandSparkles } from 'lucide-react'
 import { campaignSchema, type CampaignFormValues } from '../schemas/campaign.schema'
@@ -7,6 +6,7 @@ import { useTemplates } from '@/features/templates/hooks/use-templates'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { RichEditor } from '@/shared/components/rich-editor/RichEditor'
 import {
   Select,
   SelectContent,
@@ -27,6 +27,7 @@ export function CampaignForm({ defaultValues, onSubmit, isLoading }: Props) {
   const {
     register,
     handleSubmit,
+    control,
     setValue,
     watch,
     formState: { errors },
@@ -37,7 +38,6 @@ export function CampaignForm({ defaultValues, onSubmit, isLoading }: Props) {
 
   const selectedTemplateId = watch('templateId')
 
-  // Cuando el usuario selecciona una plantilla, pre-rellena asunto y cuerpo
   function handleTemplateSelect(templateId: string) {
     if (templateId === 'none') {
       setValue('templateId', undefined)
@@ -59,7 +59,9 @@ export function CampaignForm({ defaultValues, onSubmit, isLoading }: Props) {
           <Label className="flex items-center gap-1.5">
             <WandSparkles size={13} className="text-muted-foreground" />
             Usar plantilla{' '}
-            <span className="text-muted-foreground font-normal">(opcional)</span>
+            <span className="text-muted-foreground font-normal text-xs">
+              (opcional — rellena asunto y cuerpo)
+            </span>
           </Label>
           <Select
             value={selectedTemplateId ?? 'none'}
@@ -77,11 +79,6 @@ export function CampaignForm({ defaultValues, onSubmit, isLoading }: Props) {
               ))}
             </SelectContent>
           </Select>
-          {selectedTemplateId && (
-            <p className="text-xs text-muted-foreground">
-              Plantilla aplicada — puedes editar el asunto y cuerpo antes de guardar.
-            </p>
-          )}
         </div>
       )}
 
@@ -99,13 +96,19 @@ export function CampaignForm({ defaultValues, onSubmit, isLoading }: Props) {
 
       <div className="space-y-1">
         <Label>Cuerpo</Label>
-        <textarea
-          {...register('body')}
-          rows={8}
-          className="w-full rounded-md border px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring font-sans"
-          placeholder="Hola {nombre}, ..."
+        <Controller
+          name="body"
+          control={control}
+          render={({ field }) => (
+            <RichEditor
+              value={field.value}
+              onChange={field.onChange}
+              placeholder="Hola {nombre}, ..."
+              minHeight={280}
+              error={errors.body?.message}
+            />
+          )}
         />
-        {errors.body && <p className="text-xs text-destructive">{errors.body.message}</p>}
       </div>
 
       <Button type="submit" disabled={isLoading} className="w-full">
