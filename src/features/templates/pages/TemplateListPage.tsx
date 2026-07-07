@@ -3,7 +3,6 @@ import { FileText, Pencil, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import {
   Dialog,
   DialogContent,
@@ -56,24 +55,24 @@ export function TemplateListPage() {
             Reutiliza diseños de correo en tus campañas
           </p>
         </div>
-
-        <Sheet open={createOpen} onOpenChange={setCreateOpen}>
-          <SheetTrigger asChild>
-            <Button size="sm">
-              <FileText size={14} className="mr-2" />
-              Nueva plantilla
-            </Button>
-          </SheetTrigger>
-          <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
-            <SheetHeader>
-              <SheetTitle>Nueva plantilla</SheetTitle>
-            </SheetHeader>
-            <div className="pt-6">
-              <TemplateForm onSubmit={handleCreate} isLoading={isCreating} />
-            </div>
-          </SheetContent>
-        </Sheet>
+        <Button size="sm" onClick={() => setCreateOpen(true)}>
+          <FileText size={14} className="mr-2" />
+          Nueva plantilla
+        </Button>
       </div>
+
+      {/* Dialog para crear */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Nueva plantilla</DialogTitle>
+            <DialogDescription>
+              Crea una plantilla reutilizable para tus campañas de correo.
+            </DialogDescription>
+          </DialogHeader>
+          <TemplateForm onSubmit={handleCreate} isLoading={isCreating} />
+        </DialogContent>
+      </Dialog>
 
       {isLoading ? (
         <div className="flex items-center justify-center h-40 text-sm text-muted-foreground">
@@ -174,45 +173,53 @@ export function TemplateListPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Sheet para editar */}
-      <Sheet open={!!editingTemplate} onOpenChange={(open) => !open && setEditingTemplate(null)}>
-        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>Editar plantilla</SheetTitle>
-          </SheetHeader>
-          <div className="pt-6">
-            {editingTemplate && (
-              <TemplateForm
-                defaultValues={{
-                  name:    editingTemplate.name,
-                  subject: editingTemplate.subject,
-                  body:    editingTemplate.body,
-                }}
-                onSubmit={handleUpdate}
-                isLoading={isUpdating}
-                submitLabel="Actualizar plantilla"
-              />
-            )}
-          </div>
-        </SheetContent>
-      </Sheet>
+      {/* Dialog para editar */}
+      <Dialog
+        open={!!editingTemplate}
+        onOpenChange={(open) => !open && setEditingTemplate(null)}
+      >
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Editar plantilla</DialogTitle>
+            <DialogDescription>
+              Modifica el contenido de la plantilla.
+            </DialogDescription>
+          </DialogHeader>
+          {editingTemplate && (
+            <TemplateForm
+              defaultValues={{
+                name:    editingTemplate.name,
+                subject: editingTemplate.subject,
+                body:    editingTemplate.body,
+              }}
+              onSubmit={handleUpdate}
+              isLoading={isUpdating}
+              submitLabel="Actualizar plantilla"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
-      {/* Sheet para preview */}
-      <Sheet open={!!previewTemplate} onOpenChange={(open) => !open && setPreviewTemplate(null)}>
-        <SheetContent className="w-full sm:max-w-xl overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>{previewTemplate?.name}</SheetTitle>
-          </SheetHeader>
-          <div className="pt-6">
-            {previewTemplate && (
-              <TemplatePreview
-                subject={previewTemplate.subject}
-                body={previewTemplate.body}
-              />
-            )}
-          </div>
-        </SheetContent>
-      </Sheet>
+      {/* Dialog para preview */}
+      <Dialog
+        open={!!previewTemplate}
+        onOpenChange={(open) => !open && setPreviewTemplate(null)}
+      >
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{previewTemplate?.name}</DialogTitle>
+            <DialogDescription>
+              {previewTemplate?.subject}
+            </DialogDescription>
+          </DialogHeader>
+          {previewTemplate && (
+            <TemplatePreview
+              subject={previewTemplate.subject}
+              body={previewTemplate.body}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

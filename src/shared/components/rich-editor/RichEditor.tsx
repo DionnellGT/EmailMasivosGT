@@ -124,7 +124,7 @@ export function RichEditor({ value = '', onChange, placeholder, minHeight = 240,
   useEffect(() => {
     if (!editor || htmlMode) return
     if (value !== editor.getHTML()) {
-      editor.commands.setContent(value ?? '', false)
+      editor.commands.setContent(value ?? '', { emitUpdate: false })
       setHtmlCode(value ?? '')
     }
   }, [value, editor, htmlMode])
@@ -139,7 +139,7 @@ export function RichEditor({ value = '', onChange, placeholder, minHeight = 240,
         'Al pasar a modo Visual, el HTML complejo (tablas, estilos inline avanzados) puede perder formato.\n\n¿Continuar de todas formas?'
       )
       if (!ok) return
-      editor.commands.setContent(htmlCode, false)
+      editor.commands.setContent(htmlCode, { emitUpdate: false })
       setHtmlMode(false)
       onChange?.(htmlCode)
     }
