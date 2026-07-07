@@ -86,10 +86,22 @@ const PREVIEW_STYLES = `
   p { margin:0 0 1em; }
 `
 
+function isComplexHtml(html: string): boolean {
+  if (!html) return false
+  return (
+    /<table/i.test(html) ||
+    /<tr/i.test(html) ||
+    /<td/i.test(html) ||
+    /style\s*=\s*["'][^"']{30,}/i.test(html) ||
+    /<img/i.test(html)
+  )
+}
+
 export function RichEditor({ value = '', onChange, placeholder, minHeight = 240, error }: Props) {
-  const [mode, setMode]         = useState<Mode>('visual')
+  const complex = isComplexHtml(value)
+  const [mode, setMode]         = useState<Mode>(complex ? 'html' : 'visual')
   const [htmlCode, setHtmlCode] = useState(value)
-  const [htmlMode, setHtmlMode] = useState(false)
+  const [htmlMode, setHtmlMode] = useState(complex)
   const [linkUrl, setLinkUrl]   = useState('')
   const [showLink, setShowLink] = useState(false)
   const [color, setColor]       = useState('#000000')
@@ -124,6 +136,14 @@ export function RichEditor({ value = '', onChange, placeholder, minHeight = 240,
   useEffect(() => {
     if (!editor || htmlMode) return
     if (value !== editor.getHTML()) {
+      // Si el nuevo valor es HTML complejo, cambiar a modo HTML en vez de cargarlo en Tiptap
+      if (isComplexHtml(value)) {
+        setHtmlCode(value)
+        setHtmlMode(true)
+        setMode('html')
+        onChange?.(value)
+        return
+      }
       editor.commands.setContent(value ?? '', { emitUpdate: false })
       setHtmlCode(value ?? '')
     }

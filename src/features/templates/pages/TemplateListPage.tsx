@@ -205,7 +205,7 @@ export function TemplateListPage() {
         open={!!previewTemplate}
         onOpenChange={(open) => !open && setPreviewTemplate(null)}
       >
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{previewTemplate?.name}</DialogTitle>
             <DialogDescription>
