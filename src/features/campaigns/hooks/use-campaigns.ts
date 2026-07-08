@@ -75,8 +75,12 @@ export function useDeleteCampaign() {
 export function useSendCampaign() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, recipientIds }: { id: string; recipientIds?: string[] }) =>
-      api.post(ENDPOINTS.campaigns.send(id), { recipientIds }).then((r) => r.data),
+    mutationFn: ({ id, recipientIds, attachments }: {
+      id: string
+      recipientIds?: string[]
+      attachments?: { filename: string; content: string; contentType: string }[]
+    }) =>
+      api.post(ENDPOINTS.campaigns.send(id), { recipientIds, attachments }).then((r) => r.data),
     onSuccess: (_, { id }) => {
       qc.invalidateQueries({ queryKey: [...QUERY_KEY, id] })
       qc.invalidateQueries({ queryKey: [...QUERY_KEY, id, 'logs'] })

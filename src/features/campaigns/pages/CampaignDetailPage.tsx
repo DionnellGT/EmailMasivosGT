@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { ArrowLeft, Send, Trash2, CheckCircle, XCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useCampaign, useSendCampaign, useDeleteCampaign, useCampaignLogs } from '../hooks/use-campaigns'
+import { AttachmentUploader, type AttachmentFile } from '../components/AttachmentUploader'
 import type { CampaignStatus } from '@/shared/types'
 
 const statusConfig: Record<CampaignStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
@@ -20,6 +22,8 @@ export function CampaignDetailPage() {
   const { data: logs = [] } = useCampaignLogs(id!)
   const { mutate: sendCampaign, isPending: isSending } = useSendCampaign()
   const { mutate: deleteCampaign, isPending: isDeleting } = useDeleteCampaign()
+
+  const [attachments, setAttachments] = useState<AttachmentFile[]>([])
 
   if (isLoading) return (
     <div className="p-6 flex items-center justify-center h-60 text-sm text-muted-foreground">
@@ -42,6 +46,15 @@ export function CampaignDetailPage() {
     deleteCampaign(id!, { onSuccess: () => navigate('/campaigns') })
   }
 
+  function handleSend() {
+    sendCampaign({
+      id: id!,
+      attachments: attachments.map(({ filename, content, contentType }) => ({
+        filename, content, contentType,
+      })),
+    })
+  }
+
   return (
     <div className="p-6 space-y-6 max-w-3xl">
       {/* Header */}
@@ -61,7 +74,7 @@ export function CampaignDetailPage() {
             <Trash2 size={14} className="mr-1" /> Eliminar
           </Button>
           {canSend && (
-            <Button size="sm" onClick={() => sendCampaign({ id: id! })} disabled={isSending}>
+            <Button size="sm" onClick={handleSend} disabled={isSending}>
               <Send size={14} className="mr-1" />
               {isSending ? 'Enviando...' : 'Enviar campaña'}
             </Button>
@@ -88,6 +101,21 @@ export function CampaignDetailPage() {
           <CardContent><span className="text-2xl font-semibold">{deliveryRate}%</span></CardContent>
         </Card>
       </div>
+
+      {/* Adjuntos — solo si la campaña se puede enviar */}
+      {canSend && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium">Adjuntos del envío</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AttachmentUploader
+              attachments={attachments}
+              onChange={setAttachments}
+            />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Cuerpo del correo */}
       <Card>
