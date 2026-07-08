@@ -9,7 +9,7 @@ const statusConfig: Record<CampaignStatus, { label: string; variant: 'default' |
   sent:      { label: 'Enviado',    variant: 'default' },
   failed:    { label: 'Fallido',    variant: 'destructive' },
 }
-
+ 
 export function RecentCampaignsTable({ campaigns, isLoading }: { campaigns: Campaign[]; isLoading?: boolean }) {
   return (
     <DataTable

@@ -102,28 +102,50 @@ export function CampaignDetailPage() {
         </Card>
       </div>
 
-      {/* Adjuntos — solo si la campaña se puede enviar */}
+      {/* Adjuntos */}
       {canSend && (
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-medium">Adjuntos del envío</CardTitle>
           </CardHeader>
           <CardContent>
-            <AttachmentUploader
-              attachments={attachments}
-              onChange={setAttachments}
-            />
+            <AttachmentUploader attachments={attachments} onChange={setAttachments} />
           </CardContent>
         </Card>
       )}
 
-      {/* Cuerpo del correo */}
+      {/* Preview del correo */}
       <Card>
-        <CardHeader><CardTitle className="text-sm font-medium">Contenido del correo</CardTitle></CardHeader>
-        <CardContent>
-          <pre className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed font-sans">
-            {campaign.body}
-          </pre>
+        <CardHeader>
+          <CardTitle className="text-sm font-medium">Vista previa del correo</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0 overflow-hidden rounded-b-lg">
+          <iframe
+            srcDoc={`<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+  body { font-family: Arial, sans-serif; font-size:14px; line-height:1.6;
+         color:#1a1a1a; padding:20px 24px; margin:0; }
+  h1,h2,h3 { line-height:1.3; }
+  a { color:#3B82F6; }
+  ul,ol { padding-left:20px; }
+  code { background:#f3f4f6; padding:2px 4px; border-radius:3px; font-size:13px; }
+  blockquote { border-left:3px solid #d1d5db; margin:0; padding-left:12px; color:#6b7280; }
+  p { margin:0 0 1em; }
+  table { border-collapse:collapse; width:100%; }
+</style></head>
+<body>${campaign.body || '<p style="color:#9ca3af">Sin contenido</p>'}</body>
+</html>`}
+            className="w-full border-0"
+            style={{ minHeight: 300 }}
+            onLoad={(e) => {
+              const iframe = e.currentTarget
+              const h = iframe.contentDocument?.body?.scrollHeight
+              if (h) iframe.style.height = h + 40 + 'px'
+            }}
+            title="Vista previa del correo"
+            sandbox="allow-same-origin"
+          />
         </CardContent>
       </Card>
 
