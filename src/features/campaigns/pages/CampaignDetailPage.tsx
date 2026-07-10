@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router'
-import { ArrowLeft, Send, Trash2, CheckCircle, XCircle } from 'lucide-react'
+import { ArrowLeft, Send, Trash2, CheckCircle, XCircle, Users } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useCampaign, useSendCampaign, useDeleteCampaign, useCampaignLogs } from '../hooks/use-campaigns'
+import { useRecipients } from '@/features/recipients/hooks/use-recipients'
 import { AttachmentUploader, type AttachmentFile } from '../components/AttachmentUploader'
 import type { CampaignStatus } from '@/shared/types'
 
@@ -20,6 +21,7 @@ export function CampaignDetailPage() {
   const navigate = useNavigate()
   const { data: campaign, isLoading } = useCampaign(id!)
   const { data: logs = [] } = useCampaignLogs(id!)
+  const { data: recipients = [] } = useRecipients()
   const { mutate: sendCampaign, isPending: isSending } = useSendCampaign()
   const { mutate: deleteCampaign, isPending: isDeleting } = useDeleteCampaign()
 
@@ -113,6 +115,67 @@ export function CampaignDetailPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Destinatarios */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Users size={14} />
+              Destinatarios
+            </CardTitle>
+            <span className="text-xs text-muted-foreground">
+              {recipients.length} en total
+            </span>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          {recipients.length === 0 ? (
+            <p className="text-sm text-muted-foreground px-6 pb-4">
+              No hay destinatarios. Agrégalos desde la sección Destinatarios.
+            </p>
+          ) : (
+            <div className="max-h-60 overflow-y-auto">
+              {recipients.map((recipient, i) => (
+                <div
+                  key={recipient.id}
+                  className={`flex items-center gap-3 px-6 py-2.5 text-sm ${
+                    i < recipients.length - 1 ? 'border-b' : ''
+                  }`}
+                >
+                  <div className="h-7 w-7 rounded-full bg-muted flex items-center justify-center text-xs font-medium shrink-0">
+                    {recipient.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{recipient.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{recipient.email}</p>
+                  </div>
+                  {recipient.tags?.length > 0 && (
+                    <div className="flex gap-1 shrink-0">
+                      {recipient.tags.slice(0, 2).map((tag) => (
+                        <Badge key={tag} variant="secondary" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                      {recipient.tags.length > 2 && (
+                        <span className="text-xs text-muted-foreground">
+                          +{recipient.tags.length - 2}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <Badge
+                    variant={recipient.isActive ? 'default' : 'secondary'}
+                    className="text-xs shrink-0"
+                  >
+                    {recipient.isActive ? 'Activo' : 'Inactivo'}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Preview del correo */}
       <Card>
