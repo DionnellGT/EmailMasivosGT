@@ -86,6 +86,9 @@ export function useSendCampaign() {
       qc.invalidateQueries({ queryKey: [...QUERY_KEY, id, 'logs'] })
       sileo.success({title: 'Campaña enviada correctamente'})
     },
-    onError: () => sileo.error({title: 'Error al enviar la campaña'}),
+    onError: (err: any) => {
+      const msg = err?.response?.data?.message
+      sileo.error({ title: Array.isArray(msg) ? msg.join(', ') : (msg ?? 'Error al enviar la campaña') })
+    },
   })
 }
