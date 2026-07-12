@@ -10,6 +10,7 @@ export interface Campaign {
   totalRecipients: number
   sentCount: number
   failedCount: number
+  openedCount: number
   sentAt?: string
   createdAt: string
   updatedAt: string
@@ -21,6 +22,8 @@ export interface SendLog {
   status: 'sent' | 'failed'
   error?: string
   resendId?: string
+  openedAt?: string
+  openCount: number
   sentAt: string
   recipient?: Recipient
 }

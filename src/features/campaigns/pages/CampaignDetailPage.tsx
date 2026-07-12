@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router'
-import { ArrowLeft, Send, Trash2, CheckCircle, XCircle, Users } from 'lucide-react'
+import { ArrowLeft, Send, Trash2, CheckCircle, XCircle, Users, MailOpen } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -85,7 +85,7 @@ export function CampaignDetailPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-5 gap-4">
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-xs text-muted-foreground">Total</CardTitle></CardHeader>
           <CardContent><span className="text-2xl font-semibold">{campaign.totalRecipients}</span></CardContent>
@@ -93,6 +93,17 @@ export function CampaignDetailPage() {
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-xs text-muted-foreground">Enviados</CardTitle></CardHeader>
           <CardContent><span className="text-2xl font-semibold text-green-600">{campaign.sentCount}</span></CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2"><CardTitle className="text-xs text-muted-foreground">Abrieron</CardTitle></CardHeader>
+          <CardContent>
+            <span className="text-2xl font-semibold text-blue-600">{campaign.openedCount}</span>
+            {campaign.sentCount > 0 && (
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {Math.round((campaign.openedCount / campaign.sentCount) * 100)}%
+              </p>
+            )}
+          </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-xs text-muted-foreground">Fallidos</CardTitle></CardHeader>
@@ -229,6 +240,12 @@ export function CampaignDetailPage() {
                     : <XCircle size={14} className="text-red-500 shrink-0" />
                   }
                   <span className="flex-1 font-mono text-xs">{log.email}</span>
+                  {log.openedAt && (
+                    <span className="flex items-center gap-1 text-xs text-blue-500 shrink-0">
+                      <MailOpen size={12} />
+                      {log.openCount > 1 ? `${log.openCount}x` : 'Abrió'}
+                    </span>
+                  )}
                   {log.error && (
                     <span className="text-xs text-red-400 truncate max-w-48">{log.error}</span>
                   )}
