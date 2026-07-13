@@ -73,7 +73,7 @@ export function CampaignDetailPage() {
         </div>
         <div className="flex gap-2">
           <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isDeleting}>
-            <Trash2 size={14} className="mr-1" /> Eliminar
+            <Trash2 size={14} className="mr-1" /> {isDeleting ? 'Eliminando...' : 'Eliminar'}
           </Button>
           {canSend && (
             <Button size="sm" onClick={handleSend} disabled={isSending}>

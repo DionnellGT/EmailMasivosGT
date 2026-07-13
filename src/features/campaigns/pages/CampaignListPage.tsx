@@ -18,7 +18,7 @@ export function CampaignListPage() {
   const navigate = useNavigate()
   const { data: campaigns = [], isLoading } = useCampaigns()
   const { mutate: deleteCampaign, isPending: isDeleting } = useDeleteCampaign()
-  
+   
   function handleDelete(id: string) {
     if (!confirm('¿Eliminar esta campaña?')) return
     deleteCampaign(id!, { onSuccess: () => navigate('/campaigns') })
@@ -92,8 +92,9 @@ export function CampaignListPage() {
                       variant='destructive'
                       size="sm"
                       onClick={() => handleDelete(row.id)}
+                      disabled={isDeleting}
                     >
-                      eliminar
+                      {isDeleting ? 'Eliminando...' : 'Eliminar'}
                     </Button>
                   </>
                 ),
