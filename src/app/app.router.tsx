@@ -1,9 +1,11 @@
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 import { AppLayout } from "../shared/components/layout/AppLayout";
 import { CampaignCreatePage, CampaignDetailPage, CampaignListPage } from "@/features/campaigns";
-import { DashboardPage } from "@/features/dasboard";
-import { RecipientListPage } from "@/features/recipients/pages/RecipientListPage";
-import { TemplateListPage } from "@/features/templates";
+import { lazy } from "react";
+
+const DashboardPage = lazy(() => import('../features/dasboard/DashboardPage').then(module => ({ default: module.DashboardPage })));
+const RecipientListPage = lazy(() => import('../features/recipients/pages/RecipientListPage').then(module => ({ default: module.RecipientListPage })));
+const TemplateListPage = lazy(() => import('../features/templates/pages/TemplateListPage').then(module => ({ default: module.TemplateListPage })));
 
 
 const appRouter = createBrowserRouter([
