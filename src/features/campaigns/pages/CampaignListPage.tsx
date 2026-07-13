@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DataTable } from '@/shared/components/data-table/DataTable'
-import { useCampaigns } from '../hooks/use-campaigns'
+import { useCampaigns, useDeleteCampaign } from '../hooks/use-campaigns'
 import type { Campaign, CampaignStatus } from '@/shared/types'
 
 const statusConfig: Record<CampaignStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
@@ -17,6 +17,13 @@ const statusConfig: Record<CampaignStatus, { label: string; variant: 'default' |
 export function CampaignListPage() {
   const navigate = useNavigate()
   const { data: campaigns = [], isLoading } = useCampaigns()
+  const { mutate: deleteCampaign, isPending: isDeleting } = useDeleteCampaign()
+  
+  function handleDelete(id: string) {
+    if (!confirm('¿Eliminar esta campaña?')) return
+    deleteCampaign(id!, { onSuccess: () => navigate('/campaigns') })
+  }
+
 
   return (
     <div className="p-6 space-y-6">
@@ -38,7 +45,7 @@ export function CampaignListPage() {
           <CardTitle className="text-sm font-medium">
             Todas las campañas ({campaigns.length})
           </CardTitle>
-        </CardHeader>
+        </CardHeader> 
         <CardContent>
           <DataTable<Campaign>
             data={campaigns}
@@ -73,13 +80,22 @@ export function CampaignListPage() {
                 key: 'actions',
                 label: '',
                 render: (row) => (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => navigate(`/campaigns/${row.id}`)}
-                  >
-                    Ver
-                  </Button>
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => navigate(`/campaigns/${row.id}`)}
+                    >
+                      Ver
+                    </Button>
+                    <Button
+                      variant='destructive'
+                      size="sm"
+                      onClick={() => handleDelete(row.id)}
+                    >
+                      eliminar
+                    </Button>
+                  </>
                 ),
               },
             ]}
