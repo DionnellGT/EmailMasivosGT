@@ -7,6 +7,8 @@ export interface Campaign {
   body: string
   status: CampaignStatus
   templateId?: string
+  fromName?: string
+  fromDomain?: string
   totalRecipients: number
   sentCount: number
   failedCount: number
